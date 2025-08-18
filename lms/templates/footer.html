@@ -1,0 +1,439 @@
+## mako
+<%page expression_filter="h"/>
+<%!
+  from datetime import datetime
+  from django.urls import reverse
+  from django.utils.translation import gettext as _
+  from lms.djangoapps.branding.api import get_footer
+  from openedx.core.djangoapps.lang_pref.api import footer_language_selector_is_enabled
+%>
+<% footer = get_footer(is_secure=is_secure) %>
+<% icp_license_info = getattr(settings, 'ICP_LICENSE_INFO', {})%>
+<%namespace name='static' file='static_content.html'/>
+
+<style>
+.wrapper-footer {
+  background-color: #f8f9fa;
+  color: #343a40;
+  padding: 40px 0 20px;
+  margin-top: auto;
+}
+
+.tutor-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  margin-bottom: 30px;
+}
+
+.footer-section h3 {
+  color: #2c3e50;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-section li {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.footer-section a {
+  color: #495057;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-section a:hover {
+  color: #007bff;
+  transform: translateX(4px);
+}
+
+.footer-section .icon {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.social-links {
+  display: flex;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.social-links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: #e9ecef;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  color: #495057;
+}
+
+.social-links a:hover {
+  background: #007bff;
+  color: white;
+  transform: translateY(-3px);
+}
+
+.powered-area {
+  background: #e9ecef;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+
+.logo-list {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.logo-list li:first-child {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.logo-list img {
+  transition: all 0.3s ease;
+  border-radius: 5px;
+}
+
+.logo-list img:hover {
+  transform: scale(1.1);
+}
+
+.footer-bottom {
+  border-top: 1px solid #dee2e6;
+  padding-top: 20px;
+  text-align: center;
+}
+
+.copyright-site {
+  color: #6c757d;
+  font-size: 14px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.copyright {
+  color: #6c757d;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.copyright a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.copyright a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .logo-list {
+    justify-content: center;
+  }
+
+  .social-links {
+    justify-content: center;
+  }
+}
+</style>
+
+<!-- Enhanced Footer -->
+% if uses_bootstrap:
+<div class="wrapper wrapper-footer">
+  <footer id="footer" class="tutor-container"
+    % if bidi:
+      dir=${bidi}
+    % endif
+  >
+    % if not hide_openedx_link:
+    <div class="powered-area">
+      <ul class="logo-list">
+        <li>${_('Powered by')}:</li>
+       <li>
+  <a href="https://itp.vn/" rel="noopener" target="_blank">
+    <img src="${static.url('images/tutor-logo.png')}" alt="${_('Runs on Tutor')}" width="57" />
+  </a>
+</li>
+<li>
+  <a href="https://vnuhcm.edu.vn/" rel="noopener" target="_blank">
+    <img src="${static.url('images/openedx-logo.png')}" alt="${footer['openedx_link']['title']}" width="79" />
+  </a>
+</li>
+      </ul>
+    </div>
+    % endif
+    
+    <div class="footer-content">
+      <!-- About Section -->
+      <div class="footer-section">
+        <h3>${_('About')}</h3>
+        <ul>
+          <li>
+            <a href="/about">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+              ${_('About VNUHCM')}
+            </a>
+          </li>
+          <li>
+            <a href="/blog">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+              ${_('Blog')}
+            </a>
+          </li>
+          <li>
+            <a href="/contact">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+              info@vnuhcm.edu.vn
+            </a>
+          </li>
+          <li>
+            <a href="tel:0888678028">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+              0888 678 028
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Support Section -->
+      <div class="footer-section">
+        <h3>${_('Support')}</h3>
+        <ul>
+          <li>
+            <a href="/help">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+              ${_('Student Support')}
+            </a>
+          </li>
+          <li>
+            <a href="/instructor-support">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              ${_('Instructor Resources')}
+            </a>
+          </li>
+          <li>
+            <a href="/help">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>
+              ${_('Help Center')}
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Legal Section -->
+      <div class="footer-section">
+        <h3>${_('Legal')}</h3>
+        <ul>
+          <li>
+            <a href="/tos">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/></svg>
+              ${_('Terms of Service')}
+            </a>
+          </li>
+          <li>
+            <a href="/privacy">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/></svg>
+              ${_('Privacy Policy')}
+            </a>
+          </li>
+          <li>
+            <a href="/donate">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5 2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/></svg>
+              ${_('Donate')}
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Social Section -->
+      <div class="footer-section">
+        <h3>${_('Connect')}</h3>
+        <ul>
+          <li>
+            <a href="/terms-of-use">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M19,3H5C3.9,3 3,3.9 3,5V19C3,20.1 3.9,21 5,21H19C20.1,21 21,20.1 21,19V5C21,3.9 20.1,3 19,3M19,19H5V5H19V19Z"/></svg>
+              ${_('User Agreement')}
+            </a>
+          </li>
+          <li>
+            <a href="/privacy-settings">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M10,22C9.75,22 9.54,21.82 9.5,21.58L9.13,18.93C8.5,18.68 7.96,18.34 7.44,17.94L4.95,18.95C4.73,19.03 4.46,18.95 4.34,18.73L2.34,15.27C2.21,15.05 2.27,14.78 2.46,14.63L4.57,12.97L4.5,12L4.57,11L2.46,9.37C2.27,9.22 2.21,8.95 2.34,8.73L4.34,5.27C4.46,5.05 4.73,4.96 4.95,5.05L7.44,6.05C7.96,5.66 8.5,5.32 9.13,5.07L9.5,2.42C9.54,2.18 9.75,2 10,2H14C14.25,2 14.46,2.18 14.5,2.42L14.87,5.07C15.5,5.32 16.04,5.66 16.56,6.05L19.05,5.05C19.27,4.96 19.54,5.05 19.66,5.27L21.66,8.73C21.79,8.95 21.73,9.22 21.54,9.37L19.43,11L19.5,12L19.43,13L21.54,14.63C21.73,14.78 21.79,15.05 21.66,15.27L19.66,18.73C19.54,18.95 19.27,19.04 19.05,18.95L16.56,17.95C16.04,18.34 15.5,18.68 14.87,18.93L14.5,21.58C14.46,21.82 14.25,22 14,22H10M11.25,4L10.88,6.61C9.68,6.86 8.62,7.5 7.85,8.39L5.44,7.35L4.69,8.65L6.8,10.2C6.4,11.37 6.4,12.64 6.8,13.8L4.68,15.36L5.43,16.66L7.86,15.62C8.63,16.5 9.68,17.14 10.87,17.38L11.24,20H12.76L13.13,17.39C14.32,17.14 15.37,16.5 16.14,15.62L18.57,16.66L19.32,15.36L17.2,13.81C17.6,12.64 17.6,11.37 17.2,10.2L19.31,8.65L18.56,7.35L16.15,8.39C15.38,7.5 14.32,6.86 13.12,6.62L12.75,4H11.25Z"/></svg>
+              ${_('Privacy Settings')}
+            </a>
+          </li>
+        </ul>
+        
+        <div class="social-links">
+          <a href="#" aria-label="${_('Facebook')}">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="#" aria-label="${_('YouTube')}">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="#" aria-label="${_('LinkedIn')}">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          <a href="#" aria-label="${_('Twitter')}">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span class="copyright-site">${_('Copyright')} &copy;${datetime.now().year} VNUHCM. ${_('All Rights Reserved')}.</span>
+      <div class="colophon">
+        <p class="copyright">${footer['copyright']}
+          % if icp_license_info.get('icp_license'):
+            ${u" | {text}".format(text=icp_license_info.get('text'))}
+            <a href="${icp_license_info.get('icp_license_link', '#')}">
+              ${u" {icp}".format(icp=icp_license_info.get('icp_license'))}
+            </a>
+          % endif
+        </p>
+        <p style="color: #7f8c8d; font-size: 11px; margin-top: 5px;">
+          ${_('Ho Chi Minh City, Vietnam')}
+        </p>
+      </div>
+    </div>
+  </footer>
+</div>
+% else:
+<!-- Non-Bootstrap Version -->
+<div class="wrapper wrapper-footer">
+  <footer id="footer" class="tutor-container"
+    % if bidi:
+      dir=${bidi}
+    % endif
+  >
+    % if not hide_openedx_link:
+    <div class="powered-area">
+      <ul class="logo-list">
+        <li>${_('Powered by')}:</li>
+        <li>
+                     <img src="${static.url('images/tutor-logo.png')}" alt="${_('Runs on Tutor')}" width="57" />
+          
+        </li>
+        <li>
+                      <img src="${static.url('images/openedx-logo.png')}" alt="${footer['openedx_link']['title']}" width="79" />
+          
+        </li>
+      </ul>
+    </div>
+    % endif
+    
+    <div class="footer-content">
+      <!-- About Section -->
+      <div class="footer-section">
+        <h3>${_('About')}</h3>
+        <ul>
+          <li><a href="/about">${_('About VNUHCM')}</a></li>
+          <li><a href="/blog">${_('Blog')}</a></li>
+          <li><a href="/contact">mooc@vnu-itp.edu.vn</a></li>
+          <li><a href="tel:0888678028">0888 678 028</a></li>
+        </ul>
+      </div>
+
+      <!-- Support Section -->
+      <div class="footer-section">
+        <h3>${_('Support')}</h3>
+        <ul>
+          <li><a href="/help">${_('Student Support')}</a></li>
+          <li><a href="/instructor-support">${_('Instructor Resources')}</a></li>
+          <li><a href="/help">${_('Help Center')}</a></li>
+        </ul>
+      </div>
+
+      <!-- Legal Section -->
+      <div class="footer-section">
+        <h3>${_('Legal')}</h3>
+        <ul>
+          <li><a href="/tos">${_('Terms of Service')}</a></li>
+          <li><a href="/privacy">${_('Privacy Policy')}</a></li>
+          <li><a href="/donate">${_('Donate')}</a></li>
+        </ul>
+      </div>
+
+      <!-- Social Section -->
+      <div class="footer-section">
+        <h3>${_('Connect')}</h3>
+        <ul>
+          <li><a href="/terms-of-use">${_('User Agreement')}</a></li>
+          <li><a href="/privacy-settings">${_('Privacy Settings')}</a></li>
+        </ul>
+        
+        <div class="social-links">
+          <a href="#" aria-label="${_('Facebook')}">f</a>
+          <a href="#" aria-label="${_('YouTube')}">y</a>
+          <a href="#" aria-label="${_('LinkedIn')}">in</a>
+          <a href="#" aria-label="${_('Twitter')}">t</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span class="copyright-site">${_('Copyright')} &copy;${datetime.now().year} VNUHCM. ${_('All Rights Reserved')}.</span>
+      <div class="colophon">
+        <p class="copyright">${footer['copyright']}
+          % if icp_license_info.get('icp_license'):
+            ${u" | {text}".format(text=icp_license_info.get('text'))}
+            <a href="${icp_license_info.get('icp_license_link', '#')}">
+              ${u" {icp}".format(icp=icp_license_info.get('icp_license'))}
+            </a>
+          % endif
+        </p>
+        <p style="color: #7f8c8d; font-size: 11px; margin-top: 5px;">
+          ${_('Ho Chi Minh City, Vietnam')}
+        </p>
+      </div>
+    </div>
+  </footer>
+</div>
+% endif
+
+% if include_dependencies:
+  <%static:js group='base_vendor'/>
+  <%static:css group='style-vendor'/>
+  <%include file="widgets/segment-io.html" />
+  <%include file="widgets/segment-io-footer.html" />
+% endif
+% if footer_css_urls:
+  % for url in footer_css_urls:
+    <link rel="stylesheet" type="text/css" href="${url}"></link>
+  % endfor
+% endif

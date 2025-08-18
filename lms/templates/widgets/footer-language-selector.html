@@ -1,0 +1,120 @@
+## Language-selection widget for the footer.
+##
+## Requires settings.LANGUAGE_COOKIE_NAME.
+<%page expression_filter="h"/>
+<%!
+  from babel import Locale
+  from django.conf import settings
+  from django.utils.translation import gettext as _
+
+  from openedx.core.djangoapps.lang_pref import COOKIE_DURATION
+  from openedx.core.djangoapps.lang_pref.api import released_languages
+  from openedx.core.djangolib.js_utils import js_escaped_string
+
+  # Make sure LANGUAGE_COOKIE_NAME is present.
+  if not settings.LANGUAGE_COOKIE_NAME:
+      raise ValueError('settings.LANGUAGE_COOKIE_NAME is required to use footer-language-selector.')
+%>
+<%namespace name='static' file='../static_content.html'/>
+
+<style>
+    .footer-language-selector {
+        position: relative;
+        display: inline-block;
+        padding: 5px 15px;
+    }
+
+    .language-icon {
+        font-size: 20px;
+        color: #007bff; /* Màu xanh dương */
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .language-icon:hover {
+        color: #0056b3; /* Màu xanh đậm khi hover */
+    }
+
+    .language-dropdown {
+        display: none;
+        position: absolute;
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        padding: 5px 0;
+        min-width: 150px;
+        z-index: 1000;
+    }
+
+    .language-dropdown.show {
+        display: block;
+    }
+
+    .language-option {
+        padding: 8px 12px;
+        cursor: pointer;
+        font-size: 14px;
+        color: #333;
+        transition: background 0.3s ease;
+    }
+
+    .language-option:hover {
+        background: #f1f1f1;
+    }
+</style>
+
+<div class="footer-language-selector">
+    <span class="icon fa fa-globe language-icon" aria-hidden="true" onclick="footerLanguageSelector.toggleDropdown()"></span>
+
+    <div id="language-dropdown" class="language-dropdown">
+        % for language in sorted(released_languages(), key=lambda x: x.code):
+            <% language_name = Locale.parse(language.code.replace('_', '-'), sep='-').language_name %>
+            <div class="language-option" onclick="footerLanguageSelector.selectLanguage('${language.code}')">
+                ${language_name}
+            </div>
+        % endfor
+    </div>
+</div>
+
+<script type="text/javascript">
+    window.footerLanguageSelector = {
+        toggleDropdown: function() {
+            var dropdown = document.getElementById("language-dropdown");
+            dropdown.classList.toggle("show");
+        },
+
+        selectLanguage: function(lang) {
+            this.setLanguageCookie(lang, this.refreshPage);
+        },
+
+        setLanguageCookie: function(value, callback) {
+            var cookie = '${settings.LANGUAGE_COOKIE_NAME | n, js_escaped_string}=' + value + ';path=/';
+
+            <% session_cookie_domain = static.get_value('SESSION_COOKIE_DOMAIN', settings.SESSION_COOKIE_DOMAIN) %>
+            % if session_cookie_domain:
+                cookie += ';domain=${session_cookie_domain | n, js_escaped_string}';
+            % endif
+            % if COOKIE_DURATION:
+                cookie += ';max-age=${COOKIE_DURATION | n, js_escaped_string}';
+            % endif
+
+            document.cookie = cookie;
+            callback();
+        },
+
+        refreshPage: function() {
+            window.location.reload();
+        }
+    };
+
+    // Ẩn dropdown khi click ra ngoài
+    document.addEventListener("click", function(event) {
+        var dropdown = document.getElementById("language-dropdown");
+        var icon = document.querySelector(".language-icon");
+
+        if (!dropdown.contains(event.target) && !icon.contains(event.target)) {
+            dropdown.classList.remove("show");
+        }
+    });
+</script>
